@@ -5,6 +5,8 @@ class Command(ABC):
     pass
 
 
+    def __init__(self):
+        pass
 
     # GitEditSettingsCommand
     # GitGetHistoryCommand

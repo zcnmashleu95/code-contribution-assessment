@@ -3,8 +3,12 @@ from collections import namedtuple
 import sys
 import os
 from warnings import warn
-
+import command
+import request
+import settings
+import cmd
 import click
+import Run
 
 
 @click.group()
@@ -70,19 +74,32 @@ def diff():
         ['git', 'diff'])
 
 
-# to be refactored into git edit settings command
-@capi.command()
-@capi.argument('option_number', type=int)
-@capi.argument('new_setting')
-def set_setting(settings):
-    settings.modify(option_number, new_setting)
-
-
 # to be refactored into input parser
 @capi.command()
 def get_input():
     new_request = click.prompt("Enter your Request:")
 
 
+def main():
+    #process = subprocess.Popen("cmd.exe", shell=False, universal_newlines=True,
+                    #stdin= subprocess.PIPE, stdout= subprocess.PIPE, stderr= subprocess.PIPE)
+
+    #process.stdin.write("dir")
+    #out = process.stdout.read()
+    #out = process.stdin.write("dir")
+
+    #print(out)
+
+    #out = process.communicate("dir" + "\n")
+    #print(out)
+    #process.stdin.close()
+
+
+
+    #subprocess.Popen(["dir"])
+    #print("Hello World!")
+
+
 if __name__ == "__main__":
-    capi(prog_name='capi')
+    # capi(prog_name='capi')
+    main()

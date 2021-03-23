@@ -18,3 +18,7 @@ class GitSettings(Settings):
     include_moved_or_copied_lines_in_same_file = False
     ignore_white_space = False
     include_moved_or_copied_lines_in_same_commit = False
+
+    def set_settings(self, option, value):
+        if option == 1:
+            self.git_clone_url = value
