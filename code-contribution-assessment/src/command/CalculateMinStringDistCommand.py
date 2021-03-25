@@ -1,0 +1,3 @@
+
+class CalculateMinStringDistCommand():
+    pass

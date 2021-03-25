@@ -1,14 +1,13 @@
 import subprocess
-from collections import namedtuple
-import sys
-import os
+
 from warnings import warn
 import command
 import request
 import settings
 import cmd
 import click
-import Run
+from InputReceiver import InputReceiver
+from InputParser import InputParser
 
 
 @click.group()
@@ -51,13 +50,13 @@ def git_clone(url):
 
 
 @capi.command()
-def logs(settings):
+def logs(self, settings):
     print("This is the Git Logs Command")
     logpro()
 
 
 # Need to optimize processes / git commands has to be run from the folder we are checking
-def logpro(settings):
+def logpro(self, settings):
     lines = subprocess.Popen(
         ['git', 'log'])
     print(lines)
@@ -81,23 +80,17 @@ def get_input():
 
 
 def main():
-    #process = subprocess.Popen("cmd.exe", shell=False, universal_newlines=True,
-                    #stdin= subprocess.PIPE, stdout= subprocess.PIPE, stderr= subprocess.PIPE)
+    receiver = InputReceiver()
+    input_parser = InputParser()
 
-    #process.stdin.write("dir")
-    #out = process.stdout.read()
-    #out = process.stdin.write("dir")
+    #for testing subprocess run
+    while True:
+        message = receiver.get_input()
+        print(subprocess.run(message, stdout=subprocess.PIPE,
+                       stderr=subprocess.STDOUT, text=True).stdout)
+        #request = InputParser.parse_input(message)
+        #request.implement()
 
-    #print(out)
-
-    #out = process.communicate("dir" + "\n")
-    #print(out)
-    #process.stdin.close()
-
-
-
-    #subprocess.Popen(["dir"])
-    #print("Hello World!")
 
 
 if __name__ == "__main__":
