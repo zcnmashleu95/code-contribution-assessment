@@ -3,6 +3,8 @@ import settings
 import click
 
 class GitCloneRepoCommand(GitCommand):
-    def execute(self, settings):
+
+    def execute(self, setting: settings):
+        filepath = setting.getSetting()
         pass
 
