@@ -4,8 +4,8 @@ import Settings
 class GitSettings(Settings):
     setting_dict
     setting_dict["git_clone_url"] = "https://github.com/zcnmashleu95/duke.git"
-    filepath
-    repo_directory
+    setting_dict["filepath"]
+    setting_dict["repo_directory"]
     setting_dict["distance_ratio"] = 80
 
     #assessment_file_paths[10]

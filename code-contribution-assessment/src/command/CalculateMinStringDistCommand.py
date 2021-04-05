@@ -1,4 +1,5 @@
-import ProcessorParser
+from processorparser import ProcessorParser
+
 
 class CalculateMinStringDistCommand():
     pass
@@ -6,7 +7,7 @@ class CalculateMinStringDistCommand():
     def __init__(self):
         pass
 
-    def execute(self, processor_parser: ProcessorParser,first_list, second_list, settings):
+    def execute(self, processor_parser: ProcessorParser, first_list, second_list, settings):
         index = 0
 
         while index < first_list.len() or index < second_list.len():

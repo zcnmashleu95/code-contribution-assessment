@@ -1,13 +1,9 @@
 import subprocess
 
 from warnings import warn
-import command
-import request
-import settings
-import cmd
 import click
-from InputReceiver import InputReceiver
-from InputParser import InputParser
+from inputreceiver.InputReceiver import InputReceiver
+from inputparser.InputParser import InputParser
 
 
 @click.group()
@@ -88,7 +84,7 @@ def main():
         message = receiver.get_input()
         print(subprocess.run(message, stdout=subprocess.PIPE,
                        stderr=subprocess.STDOUT, text=True).stdout)
-        #request = InputParser.parse_input(message)
+        #request = inputparser.parse_input(message)
         #request.implement()
 
 
