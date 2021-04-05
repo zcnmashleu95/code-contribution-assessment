@@ -24,6 +24,4 @@ class ProcessorParser:
         for line in output:
 
 
-
-
         return list_of_authors, list_of_lines
