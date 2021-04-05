@@ -4,8 +4,9 @@ import click
 
 class GitEditSettingsCommand(GitCommand):
 
+    def __init__(self):
+        pass
 
-    @staticmethod
-    def execute(setting: settings, option, value):
+    def execute(self, setting: settings, option, value):
         setting.modify(option, value)
         pass
