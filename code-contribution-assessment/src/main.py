@@ -5,6 +5,8 @@ import click
 from click_repl import register_repl
 from pathlib import Path
 import re
+import Levenshtein as lev
+import time
 
 # Command to List all files -> git ls-files "*.java"
 # Command to Check file -> git blame -p -S <filename>
@@ -63,10 +65,12 @@ def list_projects():
 @click.argument('file_path')
 def analyze_file(project, file_path):
     """Analyze Selected Project File"""
+    start_time = time.time()
     working_dir = os.path.join(project_dir, project)
     make_dir(working_dir)
-    list = get_blame_details(working_dir, file_path)
-    get_log_details(working_dir, list, file_path)
+    ln = get_blame_details(working_dir, file_path)
+    analyze(working_dir, ln, file_path)
+    print("--- Completed in %s seconds ---" % (time.time() - start_time))
 
 
 # Helper Function
@@ -99,39 +103,72 @@ def parse_blame(path, file_name):
 
     sha_list = []
     author_list = []
+    print("Git Blame Results: \n")
     for line in lines:
+        print(line)
         sha_list.append(line[0:8])
         author_list.append(re.search(r'(\((?:\[??[^\[]*?\)))', line).group(1))
+    file.close()
 
     return zip(sha_list, author_list)
 
 
-# Helper Function
-# Executes Git Log -p <commit-hash>
-def get_log_details(curr_dir, blame_list, file_path):
+# Main Analyze Function
+# Executes Git Log -p <commit-hash> and stores results in a per line txt file
+# Stores results into container for
+def analyze(curr_dir, blame_list, file_path):
     # print(*blame_list, sep="\n")
     # print(len(blame_list))
-
     # test code
-
-    test = ""
-    for ln in blame_list:
-        test = ln[0]
-
-    get_git_log(test, curr_dir)
-    parse_log(file_path)
-
-
-def get_git_log(sha, curr_dir):
     working_dir = curr_dir + "/results"
-    f = open(os.path.join(working_dir, "log_results.txt"), "w")
-    process = subprocess.Popen(['git', 'show', '-P', sha], cwd=curr_dir
-                               , stdout=f, stderr=subprocess.PIPE)
-    process.wait()  # Wait for process to complete
+    count = len(blame_list)  # Count of Lines in File
+    get_git_log(count, curr_dir, file_path)
+
+    author = [] * count
+    old_code = [] * count
+    new_code = [] * count
+
+    for i in os.listdir(working_dir):
+        if os.path.isfile(os.path.join(working_dir, i)) and '_log_results' in i:
+            file = open(working_dir + '/' + i, "r")
+            lines = file.read()
+            ## TODO: Need to refine Regex calls
+            try:
+                new_code.insert(int(i.split('_')[0]) - 1, re.search(r'[\n\r][ \t]*\+\b[ \t]*([^\n\r]*)', lines).group())
+                old_code.insert(int(i.split('_')[0]) - 1, re.search(r'[\n\r][ \t]*\-\b[ \t]*([^\n\r]*)', lines).group())
+                author.insert(int(i.split('_')[0]) - 1,
+                              re.search(r'[\n\r][ \t]*Author: \b[ \t]*([^\n\r]*)', lines).group())
+            except AttributeError:
+                pass
+
+    levenshtein_compute(zip(author, old_code, new_code))
 
 
-def parse_log(file_path):
-    print(file_path)
+# Helper
+def levenshtein_compute(compute):
+    authors_set = []
+    print("File Results: \n")
+    for x in compute:
+        distance = lev.distance(x[1].lower(), x[2].lower())
+        ratio = lev.ratio(x[1].lower(), x[2].lower())
+        print("Author: " + str(x[0]) + "    Distance: " + str(distance) + "     Ratio: " + str(ratio))
+        if ratio > 0.40:
+            authors_set.append(x[0])
+        else:
+            authors_set.append(x[0])
+    print("File Authorship Assigned to: " + max(set(authors_set), key=authors_set.count))
+
+
+# Helper Function
+def get_git_log(count, curr_dir, file_path):
+    working_dir = curr_dir + "/results"
+
+    for x in range(1, count):
+        f = open(os.path.join(working_dir, str(x) + "_log_results.txt"), "w")
+        process = subprocess.Popen(['git', 'log', '-L', str(x) + ',' + str(x) + ':' + file_path], cwd=curr_dir,
+                                   stdout=f, stderr=subprocess.PIPE)
+        process.wait()  # Wait for process to complete
+        f.close()
 
 
 register_repl(capi)
