@@ -103,9 +103,9 @@ def parse_blame(path, file_name):
 
     sha_list = []
     author_list = []
-    print("Git Blame Results: \n")
+   # print("Git Blame Results: \n")
     for line in lines:
-        print(line)
+       # print(line)
         sha_list.append(line[0:8])
         author_list.append(re.search(r'(\((?:\[??[^\[]*?\)))', line).group(1))
     file.close()
@@ -149,14 +149,16 @@ def levenshtein_compute(compute):
     authors_set = []
     print("File Results: \n")
     for x in compute:
-        distance = lev.distance(x[1].lower(), x[2].lower())
-        ratio = lev.ratio(x[1].lower(), x[2].lower())
-        print("Author: " + str(x[0]) + "    Distance: " + str(distance) + "     Ratio: " + str(ratio))
-        if ratio > 0.40:
-            authors_set.append(x[0])
-        else:
-            authors_set.append(x[0])
-    print("File Authorship Assigned to: " + max(set(authors_set), key=authors_set.count))
+        if x is not None:
+            distance = lev.distance(x[1].lower(), x[2].lower())
+            ratio = lev.ratio(x[1].lower(), x[2].lower())
+            print(str(x[0]) + "    Distance: " + str(distance) + "     Ratio: " + str(ratio))
+            if ratio >= 0.50 or distance < 20:
+                authors_set.append(x[0])
+    try:
+        print("File Authorship Assigned to: " + max(set(authors_set), key=authors_set.count))
+    except: # Catch all Exceptions
+        print("Error determining author!")
 
 
 # Helper Function
